@@ -6,18 +6,28 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
-/// takes 4 arguments. terrain image, elevation file, path file, and output image filename ni that order
+float xScale = 10.29f;
+float yScale = 7.55f;
+
+
+/// takes 4 arguments. terrain image, elevation file, path file, and output image filename in that order
 public static void main(String[] args) {
     String imagePath = args[0];
     String elevationFile = args[1];
     String pathFile = args[2];
     String outputFile = args[3];
+    BufferedImage image = null;
 
     try {
-        BufferedImage image = ImageIO.read(new File(imagePath));
+        image = ImageIO.read(new File(imagePath));
     } catch (IOException e) {
         e.printStackTrace();
         System.out.println("Error reading image file");
+    }
+    for(int x=0; x<395; x++){
+        for(int y=0; y<500; y++){
+
+        }
     }
 }
 
@@ -26,12 +36,12 @@ public static void main(String[] args) {
 /// @param x1, y1, z1: coordinates of current point
 /// @param x2, y2, z2: coordinates of goal point
 /// @return: euclidean distance
-public double heuristic(float x1, float y1, float z1, float x2, float y2, float z2) {
-    double xdist=Math.pow(x1-x2,2);
-    double ydist=Math.pow(y1-y2,2);
-    double zdist=Math.pow(z1-z2,2);
+public float heuristic(float x1, float y1, float z1, float x2, float y2, float z2) {
+    float xdist=(float) Math.pow(x1-x2,2);
+    float ydist=(float) Math.pow(y1-y2,2);
+    float zdist=(float) Math.pow(z1-z2,2);
 
-    double dist = Math.sqrt(xdist+ydist+zdist);
+    float dist = (float) Math.sqrt(xdist+ydist+zdist);
 
     return dist;
 
