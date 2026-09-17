@@ -3,17 +3,21 @@
 /// This program performs A* search on a 2d grid that represents
 /// a location with varying terrain
 
-import java.lang.Math.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
-void main() {
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    IO.println(String.format("Hello and welcome!"));
+/// takes 4 arguments. terrain image, elevation file, path file, and output image filename ni that order
+public static void main(String[] args) {
+    String imagePath = args[0];
+    String elevationFile = args[1];
+    String pathFile = args[2];
+    String outputFile = args[3];
 
-    for (int i = 1; i <= 5; i++) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        IO.println("i = " + i);
+    try {
+        BufferedImage image = ImageIO.read(new File(imagePath));
+    } catch (IOException e) {
+        e.printStackTrace();
+        System.out.println("Error reading image file");
     }
 }
 
