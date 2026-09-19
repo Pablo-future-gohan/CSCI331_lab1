@@ -1,10 +1,11 @@
 /// Daniel "Pablo" Popovich
 /// September 16, 2026
 /// This program performs A* search on a 2d grid that represents
-/// a location with varying terrain
+/// a location with varying terrain]
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.Color;
 
 float xScale = 10.29f;
 float yScale = 7.55f;
@@ -19,6 +20,7 @@ public enum Terrain{
     WALK_FOREST(1.5),
     IMPASSIBLE_VEGETATION(1000.0),
     WATER(3.0),
+    ROUGH_MEADOW(2),
     OUT_OF_BOUNDS(1000.0);
 
     private final double cost;
@@ -39,20 +41,23 @@ public static void main(String[] args) {
     String pathFile = args[2];
     String outputFile = args[3];
     BufferedImage image = null;
-    double[][] elevation = new double[395][500];
+    double[][] elevation = new double[500][395];
+    Terrain[][] terr = new Terrain[500][395];
 
     //reads the image
     try {
         image = ImageIO.read(new File(imagePath));
     } catch (IOException e) {
         e.printStackTrace();
-        System.out.println("Error reading image file");
+        System.err.println("Error reading image file");
     }
 
-    //reads the elevation file and puts the numbers into a 395x500 array
+    //reads the elevation file and puts the numbers into a 500x395 array
+    //The assignment calls it a 400x500 file but ROWS COME FIRST. It should say 500x400
+    //This confused me a bit which is why I'm pointing it out.
     String line;
     try(BufferedReader br = new BufferedReader(new FileReader(elevationFile))){
-        for(int i=0; i<395; i++){
+        for(int i=0; i<500; i++){
             int j = 0;
             line = br.readLine();
             if(line==null) {
@@ -61,19 +66,74 @@ public static void main(String[] args) {
             String[] elevations = line.trim().split("\\s+");
 
             for (String el : elevations) {
-                elevation[i][j] = Double.parseDouble(el);
-                j++;
+                if(j<395) {
+                    elevation[i][j] = Double.parseDouble(el);
+                    j++;
+                }
             }
 
         }
     } catch (IOException e){
-        System.out.println("Error reading elevation file");
+        e.printStackTrace();
+        System.err.println("Error reading elevation file");
     }
 
 
-    for(int x=0; x<395; x++){
-        for(int y=0; y<500; y++){
+    //this loops through the image and fills each cell with the color value of the image
+    for(int i=0; i<500; i++){
+        for(int j=0; j<395; j++){
+            int pixel = image.getRGB(j, i);
+            Color pixelColor = new Color(pixel);
 
+            //open land
+            if(pixelColor.getRed()==248 &&  pixelColor.getGreen()==148 && pixelColor.getBlue()==18){
+                terr[i][j]=Terrain.OPEN_LAND;
+            }
+
+            //rough meadow
+            if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==192 && pixelColor.getBlue()==0){
+                terr[i][j]=Terrain.ROUGH_MEADOW;
+            }
+
+            //easy moevement forest
+            if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==255 && pixelColor.getBlue()==255){
+                terr[i][j]=Terrain.EASY_MOVEMENT_FOREST;
+            }
+
+            //slow run forest
+            if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==208 && pixelColor.getBlue()==60){
+                terr[i][j]=Terrain.SLOW_RUN_FOREST;
+            }
+
+            //walk forest
+            if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==136 && pixelColor.getBlue()==40){
+                terr[i][j]=Terrain.WALK_FOREST;
+            }
+
+            //impassible vegetation
+            if(pixelColor.getRed()==5 &&  pixelColor.getGreen()==73 && pixelColor.getBlue()==24){
+                terr[i][j]=Terrain.IMPASSIBLE_VEGETATION;
+            }
+
+            //water
+            if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==255){
+                terr[i][j]=Terrain.WATER;
+            }
+
+            //paved road
+            if(pixelColor.getRed()==71 &&  pixelColor.getGreen()==51 && pixelColor.getBlue()==3){
+                terr[i][j]=Terrain.PAVED_ROAD;
+            }
+
+            //foot path
+            if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==0){
+                terr[i][j]=Terrain.FOOTPATH;
+            }
+
+            //out of bounds
+            if(pixelColor.getRed()==205 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==101){
+                terr[i][j]=Terrain.OUT_OF_BOUNDS;
+            }
         }
     }
 }
