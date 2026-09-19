@@ -91,47 +91,47 @@ public static void main(String[] args) {
             }
 
             //rough meadow
-            if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==192 && pixelColor.getBlue()==0){
+            else if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==192 && pixelColor.getBlue()==0){
                 terr[i][j]=Terrain.ROUGH_MEADOW;
             }
 
             //easy moevement forest
-            if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==255 && pixelColor.getBlue()==255){
+            else if(pixelColor.getRed()==255 &&  pixelColor.getGreen()==255 && pixelColor.getBlue()==255){
                 terr[i][j]=Terrain.EASY_MOVEMENT_FOREST;
             }
 
             //slow run forest
-            if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==208 && pixelColor.getBlue()==60){
+            else if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==208 && pixelColor.getBlue()==60){
                 terr[i][j]=Terrain.SLOW_RUN_FOREST;
             }
 
             //walk forest
-            if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==136 && pixelColor.getBlue()==40){
+            else if(pixelColor.getRed()==2 &&  pixelColor.getGreen()==136 && pixelColor.getBlue()==40){
                 terr[i][j]=Terrain.WALK_FOREST;
             }
 
             //impassible vegetation
-            if(pixelColor.getRed()==5 &&  pixelColor.getGreen()==73 && pixelColor.getBlue()==24){
+            else if(pixelColor.getRed()==5 &&  pixelColor.getGreen()==73 && pixelColor.getBlue()==24){
                 terr[i][j]=Terrain.IMPASSIBLE_VEGETATION;
             }
 
             //water
-            if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==255){
+            else if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==255){
                 terr[i][j]=Terrain.WATER;
             }
 
             //paved road
-            if(pixelColor.getRed()==71 &&  pixelColor.getGreen()==51 && pixelColor.getBlue()==3){
+            else if(pixelColor.getRed()==71 &&  pixelColor.getGreen()==51 && pixelColor.getBlue()==3){
                 terr[i][j]=Terrain.PAVED_ROAD;
             }
 
             //foot path
-            if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==0){
+            else if(pixelColor.getRed()==0 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==0){
                 terr[i][j]=Terrain.FOOTPATH;
             }
 
             //out of bounds
-            if(pixelColor.getRed()==205 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==101){
+            else(pixelColor.getRed()==205 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==101){
                 terr[i][j]=Terrain.OUT_OF_BOUNDS;
             }
         }
