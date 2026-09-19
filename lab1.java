@@ -9,20 +9,25 @@ import java.awt.image.BufferedImage;
 float xScale = 10.29f;
 float yScale = 7.55f;
 
-public enum Walkability{
-    OPEN_LAND(1);
-    PAVED_ROAD(1);
-    FOOTPATH(1);
-    EASY_MOVEMENT_FOREST(1.1);
-    SLOW_RUN_FOREST(1.4);
-    WALK_FOREST(1.5);
-    IMPASSIBLE_VEGETATION(1000);
-    WATER(3);
-    OUT_OF_BOUNDS(1000);
+//enum with name of each terrain and how I chose their walkability
+public enum Terrain{
+    OPEN_LAND(1.0),
+    PAVED_ROAD(1.0),
+    FOOTPATH(1.0),
+    EASY_MOVEMENT_FOREST(1.1),
+    SLOW_RUN_FOREST(1.4),
+    WALK_FOREST(1.5),
+    IMPASSIBLE_VEGETATION(1000.0),
+    WATER(3.0),
+    OUT_OF_BOUNDS(1000.0);
 
-    private final int cost;
+    private final double cost;
 
-    public int getCost() {
+    Terrain(double cost){
+        this.cost = cost;
+    }
+
+    public double getCost() {
         return this.cost;
     }
 }
@@ -34,14 +39,38 @@ public static void main(String[] args) {
     String pathFile = args[2];
     String outputFile = args[3];
     BufferedImage image = null;
-    float[][] elevation = new float[395][500];
+    double[][] elevation = new double[395][500];
 
+    //reads the image
     try {
         image = ImageIO.read(new File(imagePath));
     } catch (IOException e) {
         e.printStackTrace();
         System.out.println("Error reading image file");
     }
+
+    //reads the elevation file and puts the numbers into a 395x500 array
+    String line;
+    try(BufferedReader br = new BufferedReader(new FileReader(elevationFile))){
+        for(int i=0; i<395; i++){
+            int j = 0;
+            line = br.readLine();
+            if(line==null) {
+                break;
+            }
+            String[] elevations = line.trim().split("\\s+");
+
+            for (String el : elevations) {
+                elevation[i][j] = Double.parseDouble(el);
+                j++;
+            }
+
+        }
+    } catch (IOException e){
+        System.out.println("Error reading elevation file");
+    }
+
+
     for(int x=0; x<395; x++){
         for(int y=0; y<500; y++){
 
@@ -66,15 +95,3 @@ public float heuristic(float x1, float y1, float z1, float x2, float y2, float z
 }
 
 
-
-/*
-p   w   r
-t   t   t   t   t   t
-t   t   f   t   f
-t   f   t   t   t   t
-t   f   f   t   t   t
-f   t   t   f   t
-f   t   f   f   f
-f   f   t   t   t   t
-f   f   f   t   t   t
- */
