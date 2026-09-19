@@ -9,6 +9,23 @@ import java.awt.image.BufferedImage;
 float xScale = 10.29f;
 float yScale = 7.55f;
 
+public enum Walkability{
+    OPEN_LAND(1);
+    PAVED_ROAD(1);
+    FOOTPATH(1);
+    EASY_MOVEMENT_FOREST(1.1);
+    SLOW_RUN_FOREST(1.4);
+    WALK_FOREST(1.5);
+    IMPASSIBLE_VEGETATION(1000);
+    WATER(3);
+    OUT_OF_BOUNDS(1000);
+
+    private final int cost;
+
+    public int getCost() {
+        return this.cost;
+    }
+}
 
 /// takes 4 arguments. terrain image, elevation file, path file, and output image filename in that order
 public static void main(String[] args) {
@@ -17,6 +34,7 @@ public static void main(String[] args) {
     String pathFile = args[2];
     String outputFile = args[3];
     BufferedImage image = null;
+    float[][] elevation = new float[395][500];
 
     try {
         image = ImageIO.read(new File(imagePath));
@@ -46,3 +64,17 @@ public float heuristic(float x1, float y1, float z1, float x2, float y2, float z
     return dist;
 
 }
+
+
+
+/*
+p   w   r
+t   t   t   t   t   t
+t   t   f   t   f
+t   f   t   t   t   t
+t   f   f   t   t   t
+f   t   t   f   t
+f   t   f   f   f
+f   f   t   t   t   t
+f   f   f   t   t   t
+ */
