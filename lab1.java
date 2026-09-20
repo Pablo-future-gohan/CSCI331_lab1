@@ -6,7 +6,10 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
+import javax.swing.*;
 
+
+//how the map scales horizontally and vertically, per pixel
 float xScale = 10.29f;
 float yScale = 7.55f;
 
@@ -43,14 +46,31 @@ public static void main(String[] args) {
     BufferedImage image = null;
     double[][] elevation = new double[500][395];
     Terrain[][] terr = new Terrain[500][395];
+    LinkedList<int[]> locations = new LinkedList<>();
+
 
     //reads the image
     try {
         image = ImageIO.read(new File(imagePath));
+
     } catch (IOException e) {
         e.printStackTrace();
         System.err.println("Error reading image file");
     }
+
+    //reads the path file
+    try(BufferedReader br = new BufferedReader(new FileReader(pathFile))){
+
+        String line;
+        while((line = br.readLine()) != null){
+            String[] coordinates = line.trim().split("\\s+");
+            locations.add(new int[] {Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1])});
+        }
+    } catch(IOException e) {
+        e.printStackTrace();
+        System.err.println("Error reading file");
+    }
+
 
     //reads the elevation file and puts the numbers into a 500x395 array
     //The assignment calls it a 400x500 file but ROWS COME FIRST. It should say 500x400
@@ -131,11 +151,18 @@ public static void main(String[] args) {
             }
 
             //out of bounds
-            else(pixelColor.getRed()==205 &&  pixelColor.getGreen()==0 && pixelColor.getBlue()==101){
+            else{
                 terr[i][j]=Terrain.OUT_OF_BOUNDS;
             }
         }
     }
+
+
+
+    //displays the image
+    ImageIcon icon = new ImageIcon(imagePath);
+    JOptionPane.showMessageDialog(null, null, "Terrain", JOptionPane.INFORMATION_MESSAGE, icon);
+
 }
 
 
