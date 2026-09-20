@@ -44,9 +44,10 @@ public static void main(String[] args) {
     String pathFile = args[2];
     String outputFile = args[3];
     BufferedImage image = null;
+    BufferedImage output = null;
     double[][] elevation = new double[500][395];
     Terrain[][] terr = new Terrain[500][395];
-    LinkedList<int[]> locations = new LinkedList<>();
+    c locations = new LinkedList<>();
 
 
     //reads the image
@@ -68,7 +69,7 @@ public static void main(String[] args) {
         }
     } catch(IOException e) {
         e.printStackTrace();
-        System.err.println("Error reading file");
+        System.err.println("Error reading elevation file");
     }
 
 
@@ -159,8 +160,38 @@ public static void main(String[] args) {
 
 
 
-    //displays the image
+
+
+
+
+
+
+
+
+
+
+
+    //REMOVE THIS. DONT NEED IT. JUST KEEP IT FOR TESTING
     ImageIcon icon = new ImageIcon(imagePath);
+    JOptionPane.showMessageDialog(null, null, "Terrain", JOptionPane.INFORMATION_MESSAGE, icon);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -179,4 +210,328 @@ public float heuristic(float x1, float y1, float z1, float x2, float y2, float z
 
 }
 
+
+
+
+/// finds neighbors of a cell. Uses 4 cardinal directions
+/// @param row: the row
+/// @param col: the column
+/// @return: an array of size 2 of the row and column
+public ArrayList<int[]> getNeighbors(int row, int col){
+    ArrayList<int[]> neighbors = new ArrayList<>();
+
+    //if the spot is on the bottom
+    if(row ==499){
+        //bottom left corner
+        if(col==0){
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row-1,col});
+        }
+        //bottom right corner
+        else if(col==394){
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row-1,col});
+        }
+
+        //somwhere in middle
+        else{
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row-1,col});
+            neighbors.add(new int[] {row,col-1});
+        }
+
+    }
+
+    //is spot is on the top
+    else if(row == 0){
+        //top left corner
+        if(col==0){
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row+1,col});
+        }
+        //top right corner
+        else if(col==394){
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row+1,col});
+        }
+
+        //somwhere in middle
+        else{
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row+1,col});
+            neighbors.add(new int[] {row,col+1});
+        }
+
+
+
+
+        //if spot is on the left side
+    } else if(col ==0){
+
+        //top left (it's redundant but whatever)
+        if(row==0){
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row+1,col});
+
+            //bottom left (it's redundant but whatever)
+        } else if(row ==499){
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row-1,col});
+        }
+
+        //somwhere in the middle
+        else {
+            neighbors.add(new int[] {row,col+1});
+            neighbors.add(new int[] {row-1,col});
+            neighbors.add(new int[] {row+1,col});
+        }
+    }
+
+    //the right side
+    else if(col == 394){
+        //top right (it's redundant but whatever)
+        if(row==0){
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row+1,col});
+
+            //bottom right (it's redundant but whatever)
+        } else if(row ==499){
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row-1,col});
+        }
+
+        //somwhere in the middle
+        else {
+            neighbors.add(new int[] {row,col-1});
+            neighbors.add(new int[] {row+1,col});
+            neighbors.add(new int[] {row-1,col});
+        }
+    }
+
+    //somwhere in the middle
+    else{
+        neighbors.add(new int[] {row,col-1});
+        neighbors.add(new int[] {row,col+1});
+        neighbors.add(new int[] {row+1,col});
+        neighbors.add(new int[] {row-1,col});
+    }
+
+
+
+    return neighbors;
+}
+
+/*
+
+            //moves the car left and right
+            if (isHorizontal[letterIndex]) {
+                int[] location = findIndex(grid, letters[letterIndex]);
+
+                //this checks if the car is STUCK between the left grid border and
+                //a car on the right
+                //nothing happens b/c car is stuck
+                if (location[1] == 0 && grid[location[0]][location[1] + numTiles[letterIndex]] != '.') {
+
+                }
+
+                //this checks if the car is STUCK between RIGHT grid border and LEFT car
+                //does nothing
+                else if (location[1] + numTiles[letterIndex] == cols && grid[location[0]][location[1] - 1] != '.') {
+
+                }
+
+                //this checks if the car is STUCK between TWO CARS
+                //does nothing
+                else if ((location[1] != 0 && grid[location[0]][location[1] - 1] != '.')
+                        && grid[location[0]][location[1] + numTiles[letterIndex]] != '.') {
+
+                }
+
+
+                //this checks if the car can move both left and right
+                //moves both directions
+                else if ((location[1] != 0 && grid[location[0]][location[1] - 1] == '.')
+                        && ((location[1]+numTiles[letterIndex]!=cols)&&grid[location[0]][location[1] + numTiles[letterIndex]] == '.')) {
+                    char[][] leftGrid = new char[rows][cols];
+                    char[][] rightGrid = new char[rows][cols];
+
+                    //I make a copy of the grid twice because I will alter these two new temp grids to move a car
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            leftGrid[i][j] = grid[i][j];
+                            rightGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    leftGrid[location[0]][location[1] - 1] = letters[letterIndex];
+                    leftGrid[location[0]][location[1] + numTiles[letterIndex] - 1] = '.';
+                    rightGrid[location[0]][location[1]] = '.';
+                    rightGrid[location[0]][location[1] + numTiles[letterIndex]] = letters[letterIndex];
+
+                    neighbors.add(new JamConfig(leftGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+                    neighbors.add(new JamConfig(rightGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+                }
+
+
+                //this checks if the car can move right
+                //moves it right
+                else if ((location[1] == 0 && grid[location[0]][location[1] + numTiles[letterIndex]] == '.')
+                        || (location[1] != 0 && grid[location[0]][location[1] - 1] != '.' && grid[location[0]][location[1] + numTiles[letterIndex]] == '.')) {
+                    char[][] rightGrid = new char[rows][cols];
+
+
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            rightGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    rightGrid[location[0]][location[1]] = '.';
+                    rightGrid[location[0]][location[1] + numTiles[letterIndex]] = letters[letterIndex];
+
+                    neighbors.add(new JamConfig(rightGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+
+                }
+
+
+                //this checks if the car can move left
+                //moves it left
+                else if (location[1] != 0 && grid[location[0]][location[1] - 1] == '.') {
+                    char[][] leftGrid = new char[rows][cols];
+
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            leftGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    leftGrid[location[0]][location[1] - 1] = letters[letterIndex];
+                    leftGrid[location[0]][location[1] + numTiles[letterIndex] - 1] = '.';
+
+                    neighbors.add(new JamConfig(leftGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+
+                }
+
+
+                //this else is just here in case of any errors or I miss something somehow
+                else {
+                    System.out.println("darn it I missed a case");
+                }
+
+
+                //moves car up and down
+            } else {
+                int[] location = findIndex(grid, letters[letterIndex]);
+
+                //this checks if the car is STUCK between the top grid border and
+                //a car on the bottom
+                //nothing happens b/c car is stuck
+                if (location[0] == 0 && grid[location[0] + numTiles[letterIndex]][location[1]] != '.') {
+
+                }
+
+
+                //checks if the car is STUCK between bottom grid border and a car on the top
+                //does nothing
+                else if (location[0] + numTiles[letterIndex] == rows && grid[location[0] - 1][location[1]] != '.') {
+
+                }
+
+                //this checks if the car is STUCK between TWO CARS
+                //does nothing
+
+                else if ((location[0] != 0 && grid[location[0] - 1][location[1]] != '.')
+                        && grid[location[0] + numTiles[letterIndex]][location[1]] != '.') {
+
+                }
+
+
+                //checks if the car can move both UP and DOWN
+                else if((location[0]!=0 && grid[location[0]-1][location[1]] == '.')
+                && (location[0]+numTiles[letterIndex]!=rows) && grid[location[0]+numTiles[letterIndex]][location[1]] == '.') {
+
+
+                    char[][] upGrid = new char[rows][cols];
+                    char[][] downGrid = new char[rows][cols];
+
+                    //I make a copy of the grid twice because I will alter these two new temp grids to move a car
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            upGrid[i][j] = grid[i][j];
+                            downGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    upGrid[location[0]-1][location[1]]=letters[letterIndex];
+                    upGrid[location[0]+numTiles[letterIndex]-1][location[1]]='.';
+                    downGrid[location[0]+numTiles[letterIndex]][location[1]]=letters[letterIndex];
+                    downGrid[location[0]][location[1]]='.';
+
+
+
+                    neighbors.add(new JamConfig(upGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+                    neighbors.add(new JamConfig(downGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+
+
+                }
+
+                //checks if the car can move ONLY UP
+                //first line is if the bottom is the grid border
+                //second line is if the bottom is another car
+                else if((location[0]+numTiles[letterIndex]==rows&&grid[location[0]-1][location[1]]=='.')
+                || (grid[location[0]+numTiles[letterIndex]][location[1]] != '.' && grid[location[0]-1][location[1]] == '.')) {
+
+                    char[][] upGrid = new char[rows][cols];
+
+
+                    //make a copy of the grid in order to alter it later
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            upGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    upGrid[location[0]-1][location[1]]=letters[letterIndex];
+                    upGrid[location[0]+numTiles[letterIndex]-1][location[1]]='.';
+
+                    neighbors.add(new JamConfig(upGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+
+
+                }
+
+
+                //this checks if the car can move ONLY DOWN
+                //first line (before the ||) is if the top is grid border
+                //second line (after the ||) is if top is another car
+                else if((location[0]==0 && grid[location[0]+numTiles[letterIndex]][location[1]] == '.')
+                || (grid[location[0]-1][location[1]]!='.' && grid[location[0]+numTiles[letterIndex]][location[1]] == '.')) {
+                    char[][] downGrid = new char[rows][cols];
+
+
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            downGrid[i][j] = grid[i][j];
+                        }
+                    }
+
+                    downGrid[location[0]+numTiles[letterIndex]][location[1]]=letters[letterIndex];
+                    downGrid[location[0]][location[1]]='.';
+
+
+                    neighbors.add(new JamConfig(downGrid, cols, rows, numCars, numTiles, isHorizontal, letters));
+
+                }
+
+                //used in case something goes wrong when making neighbors
+                else{
+                    System.out.println("darn it I missed a case");
+                }
+
+            }
+
+        }
+        return neighbors;
+    }
+
+ */
 
