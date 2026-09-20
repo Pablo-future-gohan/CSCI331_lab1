@@ -161,8 +161,6 @@ public static void main(String[] args) {
 
     //displays the image
     ImageIcon icon = new ImageIcon(imagePath);
-    JOptionPane.showMessageDialog(null, null, "Terrain", JOptionPane.INFORMATION_MESSAGE, icon);
-
 }
 
 
