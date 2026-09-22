@@ -9,10 +9,6 @@ import java.awt.Color;
 import javax.swing.*;
 
 
-//how the map scales horizontally and vertically, per pixel
-float xScale = 10.29f;
-float yScale = 7.55f;
-
 //enum with name of each terrain and how I chose their walkability
 public enum Terrain{
     OPEN_LAND(1.0),
@@ -171,38 +167,17 @@ public static void main(String[] args) {
     }
 
 
+    double totalCost=0;
+    for(int i=0; i<locations.size()-1; i++){
+        int[] current= locations.get(i);
+        int[]next=locations.get(i+1);
+        copy.setRGB(current[0], current[1], new Color(140, 39, 130).getRGB());
+        LinkedList<Node> seg = search(current[0], current[1], next[0], next[1], elevation, terr);
+        totalCost+=seg.getLast().g;
+    }
+    output=copy;
 
-
-
-
-
-
-
-
-
-
-
-
-    //REMOVE THIS. DONT NEED IT. JUST KEEP IT FOR TESTING
-    ImageIcon icon = new ImageIcon(imagePath);
-    JOptionPane.showMessageDialog(null, null, "Terrain", JOptionPane.INFORMATION_MESSAGE, icon);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    System.out.println(totalCost);
 
 }
 
@@ -211,10 +186,10 @@ public static void main(String[] args) {
 /// @param x1, y1, z1: coordinates of current point
 /// @param x2, y2, z2: coordinates of goal point
 /// @return: euclidean distance
-public float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
+public static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
     //how the map scales horizontally and vertically, per pixel
-    float xScale = 10.29f;
-    float yScale = 7.55f;
+    double xScale = 10.29;
+    double yScale = 7.55;
 
     x1=x1*xScale;
     y1=y1*yScale;
@@ -222,11 +197,11 @@ public float distance(float x1, float y1, float z1, float x2, float y2, float z2
     y2=y2*yScale;
 
 
-    float xdist=(float) Math.pow(x1-x2,2);
-    float ydist=(float) Math.pow(y1-y2,2);
-    float zdist=(float) Math.pow(z1-z2,2);
+    double xdist=(double) Math.pow(x1-x2,2);
+    double ydist=(double) Math.pow(y1-y2,2);
+    double zdist=(double) Math.pow(z1-z2,2);
 
-    float dist = (float) Math.sqrt(xdist+ydist+zdist);
+    double dist = (double) Math.sqrt(xdist+ydist+zdist);
 
     return dist;
 
@@ -239,7 +214,7 @@ public float distance(float x1, float y1, float z1, float x2, float y2, float z2
 /// @param row: the row
 /// @param col: the column
 /// @return: an array of size 2 of the row and column
-public ArrayList<int[]> getNeighbors(int row, int col){
+public static ArrayList<int[]> getNeighbors(int row, int col){
     ArrayList<int[]> neighbors = new ArrayList<>();
 
     //if the spot is on the bottom
@@ -345,56 +320,65 @@ public ArrayList<int[]> getNeighbors(int row, int col){
 
 
 
-/// A* search method
+/// A* search algorithm
 /// @param startRow: starting row
 /// @param startCol: starting column
 /// @param endRow: ending row
 /// @param endCol: ending column
+/// @param elevation: elevation of goal spot
+/// @param terrain: terrain of goal spot
 /// @return: the optimal path between two cells
-public LinkedList<Node> search(int startRow, int startCol, int endRow, int endCol, int[][]elevation){
-    LinkedList<Node> path = new LinkedList<>();
+public static LinkedList<Node> search(int startRow, int startCol, int endRow, int endCol, double[][]elevation, Terrain[][] terrain){
     Map<String, String> predecessor = new HashMap<>();
     predecessor.put(startRow+ ","+startCol, null);
     Set<String> visited = new HashSet<>();
     PriorityQueue<Node> toVisit = new PriorityQueue<>((a, b) -> Double.compare(a.f, b.f));
 
-    toVisit.offer(new Node(startRow, startCol, 0, distance(startRow, startCol, elevation[startRow][startCol],endRow, endCol, elevation[endRow][endCol]))
+    //adds the first node to the queue
+    toVisit.offer(new Node(startRow, startCol, 0, distance(startRow, startCol, elevation[startRow][startCol],endRow, endCol, elevation[endRow][endCol])));
+
 
     while (!toVisit.isEmpty()) {
         Node current = toVisit.remove();
+        visited.add(current.row+","+current.col);
         ArrayList<int[]> neighbors = getNeighbors(current.row, current.col);
+        String key;
 
+        //this is if the current cell matches the goal cell
+        if (current.row == endRow && current.col == endCol) {
+            LinkedList<Node> path = new LinkedList<>();
+            key = current.row +"," + current.col;
+
+            //reconstructs the path. Each node has the g value of current just because I only care about the final node
+            while(key!=null) {
+                String[] split = key.split(",");
+                path.addFirst(new Node(Integer.parseInt(split[0]), Integer.parseInt(split[1]), current.g, 0));
+                key = predecessor.get(key);
+            }
+
+            return path;
+        }
+
+
+        //looks throughh each neighbor and adds them to the toVisit list
         for (int[] neighbor : neighbors) {
             if (!predecessor.containsKey(neighbor[0] + "," + neighbor[1])) {
-                predecessor.put(neighbor[0] + "," + neighbor[1]), current.row + "," + current.col);
-                toVisit.offer(neighbor);
+                double travelCost = distance(current.row, current.col, elevation[current.row][current.col], neighbor[0], neighbor[1], elevation[neighbor[0]][neighbor[1]])*terrain[neighbor[0]][neighbor[1]].getCost();
+                toVisit.offer(new Node(neighbor[0], neighbor[1], current.g+travelCost, current.g+travelCost+distance(neighbor[0],neighbor[1], elevation[neighbor[0]][neighbor[1]], endRow, endCol, elevation[endRow][endCol])));
+                predecessor.put(neighbor[0] + "," + neighbor[1], current.row + "," + current.col);
+
             }
+
         }
 
     }
 
-    if (toVisit.isEmpty()) {
-        return null;
-    } else {
-        String finish = toVisit.peek();
-        List<String> path = new LinkedList<>();
-        path.add(finish);
-        String currentWord = predecessor.get(finish);
-        while (currentWord != null) {
-            path.add(0, currentWord);
-            currentWord = predecessor.get(currentWord);
-        }
-        return path;
-    }
-
-
-
-    return path;
+    return null;
 }
 
 
 //I use this because I need to save the g score and f score of each point I visit
-class Node {
+static class Node {
     int row; //row of the spot
     int col; //column of the spot
     double g; //g value
@@ -407,45 +391,3 @@ class Node {
         this.f = f;
     }
 }
-
-//public float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
-
-/*
-    public static List<String> buildPathBFS(String start, String end, Set<String> dictionary) {
-
-        Map<String, String> predecessor = new HashMap<>();
-        predecessor.put(start, null);
-
-        Queue<String> toVisit = new LinkedList<>();
-        toVisit.offer(start);
-
-        while (!toVisit.isEmpty() && !toVisit.peek().equals(end)) {
-            String currentWord = toVisit.remove();
-            for (String neighbor : getNeighbors(currentWord, dictionary)) {
-                if (!predecessor.containsKey(neighbor)) {
-                    predecessor.put(neighbor, currentWord);
-                    toVisit.offer(neighbor);
-                }
-            }
-
-        }
-
-
-        if (toVisit.isEmpty()) {
-            return null;
-        } else {
-            String finish = toVisit.peek();
-            List<String> path = new LinkedList<>();
-            path.add(finish);
-            String currentWord = predecessor.get(finish);
-            while (currentWord != null) {
-                path.add(0, currentWord);
-                currentWord = predecessor.get(currentWord);
-            }
-            return path;
-        }
-
-
-    }
-
- */
