@@ -177,6 +177,13 @@ public static void main(String[] args) {
     }
     output=copy;
 
+    try{
+        ImageIO.write(output, "png", new File(outputFile));
+    } catch(IOException e){
+        e.printStackTrace();
+        System.err.println("Error writing output image");
+    }
+
     System.out.println(totalCost);
 
 }
@@ -340,6 +347,12 @@ public static LinkedList<Node> search(int startRow, int startCol, int endRow, in
 
     while (!toVisit.isEmpty()) {
         Node current = toVisit.remove();
+
+        //this is to check if the node has been checked already
+        if( visited.contains(current.row + "," + current.col) ){
+            continue;
+        }
+
         visited.add(current.row+","+current.col);
         ArrayList<int[]> neighbors = getNeighbors(current.row, current.col);
         String key;
@@ -362,12 +375,15 @@ public static LinkedList<Node> search(int startRow, int startCol, int endRow, in
 
         //looks throughh each neighbor and adds them to the toVisit list
         for (int[] neighbor : neighbors) {
-            if (!predecessor.containsKey(neighbor[0] + "," + neighbor[1])) {
-                double travelCost = distance(current.row, current.col, elevation[current.row][current.col], neighbor[0], neighbor[1], elevation[neighbor[0]][neighbor[1]])*terrain[neighbor[0]][neighbor[1]].getCost();
-                toVisit.offer(new Node(neighbor[0], neighbor[1], current.g+travelCost, current.g+travelCost+distance(neighbor[0],neighbor[1], elevation[neighbor[0]][neighbor[1]], endRow, endCol, elevation[endRow][endCol])));
-                predecessor.put(neighbor[0] + "," + neighbor[1], current.row + "," + current.col);
 
+            if(visited.contains(neighbor[0] + "," + neighbor[1])){
+                continue;
             }
+            double travelCost = distance(current.row, current.col, elevation[current.row][current.col], neighbor[0], neighbor[1], elevation[neighbor[0]][neighbor[1]])*terrain[neighbor[0]][neighbor[1]].getCost();
+            toVisit.offer(new Node(neighbor[0], neighbor[1], current.g+travelCost, current.g+travelCost+distance(neighbor[0],neighbor[1], elevation[neighbor[0]][neighbor[1]], endRow, endCol, elevation[endRow][endCol])));
+            predecessor.put(neighbor[0] + "," + neighbor[1], current.row + "," + current.col);
+
+
 
         }
 
