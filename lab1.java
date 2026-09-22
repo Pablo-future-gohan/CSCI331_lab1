@@ -173,7 +173,14 @@ public static void main(String[] args) {
         int[] current= locations.get(i);
         int[]next=locations.get(i+1);
         LinkedList<Node> seg = search(current[1], current[0], next[1], next[0], elevation, terr);
-        totalCost+=seg.getLast().g;
+        //totalCost+=seg.getLast().g;
+
+        for(int j=0; j<seg.size()-1; j++){
+            Node a = seg.get(j);
+            Node b = seg.get(j+1);
+            totalCost += distance(a.row, a.col, elevation[a.row][a.col], b.row, b.col, elevation[b.row][b.col]);
+
+        }
 
         for( Node n : seg) {
             copy.setRGB(n.col, n.row, new Color(140, 39, 130).getRGB());
@@ -188,6 +195,7 @@ public static void main(String[] args) {
         e.printStackTrace();
         System.err.println("Error writing output image");
     }
+
 
     System.out.println(totalCost);
 
