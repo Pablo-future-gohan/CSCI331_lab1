@@ -211,7 +211,17 @@ public static void main(String[] args) {
 /// @param x1, y1, z1: coordinates of current point
 /// @param x2, y2, z2: coordinates of goal point
 /// @return: euclidean distance
-public float heuristic(float x1, float y1, float z1, float x2, float y2, float z2) {
+public float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
+    //how the map scales horizontally and vertically, per pixel
+    float xScale = 10.29f;
+    float yScale = 7.55f;
+
+    x1=x1*xScale;
+    y1=y1*yScale;
+    x2=x2*xScale;
+    y2=y2*yScale;
+
+
     float xdist=(float) Math.pow(x1-x2,2);
     float ydist=(float) Math.pow(y1-y2,2);
     float zdist=(float) Math.pow(z1-z2,2);
@@ -333,3 +343,109 @@ public ArrayList<int[]> getNeighbors(int row, int col){
     return neighbors;
 }
 
+
+
+/// A* search method
+/// @param startRow: starting row
+/// @param startCol: starting column
+/// @param endRow: ending row
+/// @param endCol: ending column
+/// @return: the optimal path between two cells
+public LinkedList<Node> search(int startRow, int startCol, int endRow, int endCol, int[][]elevation){
+    LinkedList<Node> path = new LinkedList<>();
+    Map<String, String> predecessor = new HashMap<>();
+    predecessor.put(startRow+ ","+startCol, null);
+    Set<String> visited = new HashSet<>();
+    PriorityQueue<Node> toVisit = new PriorityQueue<>((a, b) -> Double.compare(a.f, b.f));
+
+    toVisit.offer(new Node(startRow, startCol, 0, distance(startRow, startCol, elevation[startRow][startCol],endRow, endCol, elevation[endRow][endCol]))
+
+    while (!toVisit.isEmpty()) {
+        Node current = toVisit.remove();
+        ArrayList<int[]> neighbors = getNeighbors(current.row, current.col);
+
+        for (int[] neighbor : neighbors) {
+            if (!predecessor.containsKey(neighbor[0] + "," + neighbor[1])) {
+                predecessor.put(neighbor[0] + "," + neighbor[1]), current.row + "," + current.col);
+                toVisit.offer(neighbor);
+            }
+        }
+
+    }
+
+    if (toVisit.isEmpty()) {
+        return null;
+    } else {
+        String finish = toVisit.peek();
+        List<String> path = new LinkedList<>();
+        path.add(finish);
+        String currentWord = predecessor.get(finish);
+        while (currentWord != null) {
+            path.add(0, currentWord);
+            currentWord = predecessor.get(currentWord);
+        }
+        return path;
+    }
+
+
+
+    return path;
+}
+
+
+//I use this because I need to save the g score and f score of each point I visit
+class Node {
+    int row; //row of the spot
+    int col; //column of the spot
+    double g; //g value
+    double f; //f value
+
+    Node (int row, int col, double g, double f) {
+        this.row = row;
+        this.col = col;
+        this.g = g;
+        this.f = f;
+    }
+}
+
+//public float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
+
+/*
+    public static List<String> buildPathBFS(String start, String end, Set<String> dictionary) {
+
+        Map<String, String> predecessor = new HashMap<>();
+        predecessor.put(start, null);
+
+        Queue<String> toVisit = new LinkedList<>();
+        toVisit.offer(start);
+
+        while (!toVisit.isEmpty() && !toVisit.peek().equals(end)) {
+            String currentWord = toVisit.remove();
+            for (String neighbor : getNeighbors(currentWord, dictionary)) {
+                if (!predecessor.containsKey(neighbor)) {
+                    predecessor.put(neighbor, currentWord);
+                    toVisit.offer(neighbor);
+                }
+            }
+
+        }
+
+
+        if (toVisit.isEmpty()) {
+            return null;
+        } else {
+            String finish = toVisit.peek();
+            List<String> path = new LinkedList<>();
+            path.add(finish);
+            String currentWord = predecessor.get(finish);
+            while (currentWord != null) {
+                path.add(0, currentWord);
+                currentWord = predecessor.get(currentWord);
+            }
+            return path;
+        }
+
+
+    }
+
+ */
