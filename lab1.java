@@ -57,7 +57,7 @@ public static void main(String[] args) {
 
 
     //copies the image to edit
-    BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+    BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
     for (int y = 0; y < image.getHeight(); y++) {
         for (int x = 0; x < image.getWidth(); x++) {
             copy.setRGB(x, y, image.getRGB(x, y));
@@ -171,9 +171,12 @@ public static void main(String[] args) {
     for(int i=0; i<locations.size()-1; i++){
         int[] current= locations.get(i);
         int[]next=locations.get(i+1);
-        copy.setRGB(current[0], current[1], new Color(140, 39, 130).getRGB());
         LinkedList<Node> seg = search(current[0], current[1], next[0], next[1], elevation, terr);
         totalCost+=seg.getLast().g;
+
+        for( Node n : seg) {
+            copy.setRGB(n.col, n.row, new Color(140, 39, 130).getRGB());
+        }
     }
     output=copy;
 
