@@ -345,7 +345,7 @@ public static LinkedList<Node> search(int startRow, int startCol, int endRow, in
     predecessor.put(startRow+ ","+startCol, null);
 
     Map<String, Double> bestGScore = new HashMap<>();
-    bestGScore.put(startRow+ ","+startCol, null);
+    bestGScore.put(startRow+ ","+startCol, 0.0);
 
     Set<String> visited = new HashSet<>();
     PriorityQueue<Node> toVisit = new PriorityQueue<>((a, b) -> Double.compare(a.f, b.f));
@@ -390,12 +390,12 @@ public static LinkedList<Node> search(int startRow, int startCol, int endRow, in
             }
             double travelCost = distance(current.row, current.col, elevation[current.row][current.col], neighbor[0], neighbor[1], elevation[neighbor[0]][neighbor[1]])*terrain[neighbor[0]][neighbor[1]].getCost();
 
-            if(!bestGScore.containsKey(neighbor[0] + "," + neighbor[1])){
+            if(!bestGScore.containsKey(neighbor[0] + "," + neighbor[1]) || current.g+travelCost < bestGScore.get(neighbor[0] + "," + neighbor[1])){
                 bestGScore.put(neighbor[0] + "," + neighbor[1], current.g+travelCost);
+                toVisit.offer(new Node(neighbor[0], neighbor[1], current.g+travelCost, current.g+travelCost+distance(neighbor[0],neighbor[1], elevation[neighbor[0]][neighbor[1]], endRow, endCol, elevation[endRow][endCol])));
+                predecessor.put(neighbor[0] + "," + neighbor[1], current.row + "," + current.col);
             }
 
-            toVisit.offer(new Node(neighbor[0], neighbor[1], current.g+travelCost, current.g+travelCost+distance(neighbor[0],neighbor[1], elevation[neighbor[0]][neighbor[1]], endRow, endCol, elevation[endRow][endCol])));
-            predecessor.put(neighbor[0] + "," + neighbor[1], current.row + "," + current.col);
 
 
 
