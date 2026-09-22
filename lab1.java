@@ -167,6 +167,7 @@ public static void main(String[] args) {
     }
 
 
+    //does search between each point in the path file and colors each cell
     double totalCost=0;
     for(int i=0; i<locations.size()-1; i++){
         int[] current= locations.get(i);
@@ -178,8 +179,9 @@ public static void main(String[] args) {
             copy.setRGB(n.col, n.row, new Color(140, 39, 130).getRGB());
         }
     }
-    output=copy;
 
+    //copies image
+    output=copy;
     try{
         ImageIO.write(output, "png", new File(outputFile));
     } catch(IOException e){
@@ -198,8 +200,8 @@ public static void main(String[] args) {
 /// @return: euclidean distance
 public static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
     //how the map scales horizontally and vertically, per pixel
-    double xScale = 10.29;
-    double yScale = 7.55;
+    double yScale = 10.29;
+    double xScale = 7.55;
 
     x1=x1*xScale;
     y1=y1*yScale;
