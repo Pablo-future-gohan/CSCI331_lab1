@@ -171,7 +171,7 @@ public static void main(String[] args) {
     for(int i=0; i<locations.size()-1; i++){
         int[] current= locations.get(i);
         int[]next=locations.get(i+1);
-        LinkedList<Node> seg = search(current[0], current[1], next[0], next[1], elevation, terr);
+        LinkedList<Node> seg = search(current[1], current[0], next[1], next[0], elevation, terr);
         totalCost+=seg.getLast().g;
 
         for( Node n : seg) {
