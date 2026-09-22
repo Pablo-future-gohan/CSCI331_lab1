@@ -15,11 +15,11 @@ public enum Terrain{
     PAVED_ROAD(1.0),
     FOOTPATH(1.0),
     EASY_MOVEMENT_FOREST(1.1),
-    SLOW_RUN_FOREST(1.4),
-    WALK_FOREST(1.5),
+    SLOW_RUN_FOREST(1.2),
+    WALK_FOREST(1.3),
     IMPASSIBLE_VEGETATION(1000.0),
     WATER(3.0),
-    ROUGH_MEADOW(2),
+    ROUGH_MEADOW(1.5),
     OUT_OF_BOUNDS(1000.0);
 
     private final double cost;
