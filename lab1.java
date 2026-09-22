@@ -18,7 +18,7 @@ public enum Terrain{
     SLOW_RUN_FOREST(1.2),
     WALK_FOREST(1.3),
     IMPASSIBLE_VEGETATION(1000.0),
-    WATER(3.0),
+    WATER(5.0),
     ROUGH_MEADOW(1.5),
     OUT_OF_BOUNDS(1000.0);
 
